@@ -31,26 +31,56 @@
                             <span>{{trans("crudbooster.text_dashboard")}}</span> </a></li>
                 @endif
 
+                @php
+                    $priv = Session::get('admin_privileges_roles');
+
+                    $access = $priv->where('is_visible', 1)->pluck('path')->toArray();
+
+                @endphp
                 @foreach(CRUDBooster::sidebarMenu() as $menu)
-                    <li data-id='{{$menu->id}}' class='{{(!empty($menu->children))?"treeview":""}} {{ (Request::is($menu->url_path."*"))?"active":""}}'>
-                        <a href='{{ ($menu->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$menu->url }}'
-                           class='{{($menu->color)?"text-".$menu->color:""}}'>
-                            <i class='{{$menu->icon}} {{($menu->color)?"text-".$menu->color:""}}'></i> <span>{{$menu->name}}</span>
-                            @if(!empty($menu->children))<i class="fa fa-angle-{{ trans("crudbooster.right") }} pull-{{ trans("crudbooster.right") }}"></i>@endif
-                        </a>
-                        @if(!empty($menu->children))
-                            <ul class="treeview-menu">
-                                @foreach($menu->children as $child)
-                                    <li data-id='{{$child->id}}' class='{{(Request::is($child->url_path .= !ends_with(Request::decodedPath(), $child->url_path) ? "/*" : ""))?"active":""}}'>
-                                        <a href='{{ ($child->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$child->url}}'
-                                           class='{{($child->color)?"text-".$child->color:""}}'>
-                                            <i class='{{$child->icon}}'></i> <span>{{$child->name}}</span>
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
+                    @php
+                        $mn = explode('/', $menu->url_path)[1];
+                    @endphp
+                    @if (!empty($menu->children))
+                        <li data-id='{{$menu->id}}' class='{{(!empty($menu->children))?"treeview":""}} {{ (Request::is($menu->url_path."*"))?"active":""}}'>
+                            <a href='{{ ($menu->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$menu->url }}'
+                                class='{{($menu->color)?"text-".$menu->color:""}}'>
+                                <i class='{{$menu->icon}} {{($menu->color)?"text-".$menu->color:""}}'></i> <span>{{$menu->name}}</span>
+                                @if(!empty($menu->children))<i class="fa fa-angle-{{ trans("crudbooster.right") }} pull-{{ trans("crudbooster.right") }}"></i>@endif
+                            </a>
+                            @if(!empty($menu->children))
+                                <ul class="treeview-menu">
+                                    @foreach($menu->children as $child)
+                                        @php
+                                            $cmn = explode('/', $child->url_path)[1];
+                                        @endphp
+                                        @if (in_array($cmn, $access))
+                                        <li data-id='{{$child->id}}' class='{{(Request::is($child->url_path .= !ends_with(Request::decodedPath(), $child->url_path) ? "/*" : ""))?"active":""}}'>
+                                            <a href='{{ ($child->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$child->url}}'
+                                                class='{{($child->color)?"text-".$child->color:""}}'>
+                                                <i class='{{$child->icon}}'></i> <span>{{$child->name}}</span>
+                                            </a>
+                                        </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </li>
+                    @else
+                        @php
+                            $mn = explode('/', $menu->url_path)[1];
+                        @endphp
+                        @if (in_array($mn, $access))
+                        <li data-id='{{$menu->id}}' class='{{(!empty($menu->children))?"treeview":""}} {{ (Request::is($menu->url_path."*"))?"active":""}}'>
+                            <a href='{{ ($menu->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$menu->url }}'
+                            class='{{($menu->color)?"text-".$menu->color:""}}'>
+                                <i class='{{$menu->icon}} {{($menu->color)?"text-".$menu->color:""}}'></i> <span>{{$menu->name}}</span>
+                                @if(!empty($menu->children))<i class="fa fa-angle-{{ trans("crudbooster.right") }} pull-{{ trans("crudbooster.right") }}"></i>@endif
+                            </a>
+                        </li>
                         @endif
-                    </li>
+                    @endif
+
                 @endforeach
 
 

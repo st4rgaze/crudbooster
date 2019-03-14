@@ -34,6 +34,7 @@
             <p class='help-block'>{{ @$form['help'] }}</p>
         @else
             <p class='text-muted'><em>{{trans("crudbooster.notice_delete_file_upload")}}</em></p>
+            <p class='help-block'>{{ @$form['help'] }}</p>
         @endif
         <div class="text-danger">{!! $errors->first($name)?"<i class='fa fa-info-circle'></i> ".$errors->first($name):"" !!}</div>
 

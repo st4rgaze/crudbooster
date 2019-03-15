@@ -42,6 +42,16 @@
                         $mn = explode('/', $menu->url_path)[1];
                     @endphp
                     @if (!empty($menu->children))
+                    @php
+                        $shouldShow = false;
+                        foreach ($menu->children as $child) {
+                            $cmn = explode('/', $child->url_path)[1];
+                            if (in_array($cmn, $access)) {
+                                $shouldShow = true;
+                            }
+                        }
+                    @endphp
+                        @if ($shouldShow)
                         <li data-id='{{$menu->id}}' class='{{(!empty($menu->children))?"treeview":""}} {{ (Request::is($menu->url_path."*"))?"active":""}}'>
                             <a href='{{ ($menu->is_broken)?"javascript:alert('".trans('crudbooster.controller_route_404')."')":$menu->url }}'
                                 class='{{($menu->color)?"text-".$menu->color:""}}'>
@@ -66,6 +76,7 @@
                                 </ul>
                             @endif
                         </li>
+                        @endif
                     @else
                         @php
                             $mn = explode('/', $menu->url_path)[1];

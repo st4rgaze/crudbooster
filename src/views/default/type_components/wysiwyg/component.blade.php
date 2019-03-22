@@ -33,7 +33,13 @@
     </script>
 @endpush
 <div class='form-group' id='form-group-{{$name}}' style="{{@$form['style']}}">
-    <label class='control-label col-sm-2'>{{$form['label']}}</label>
+    <label class='control-label col-sm-2'>
+        {{$form['label']}}
+
+        @if($required)
+            <span class='text-danger' title='{!! trans('crudbooster.this_field_is_required') !!}'>*</span>
+        @endif
+    </label>
 
     <div class="{{$col_width?:'col-sm-10'}}">
         <textarea id='textarea_{{$name}}' id="{{$name}}" {{$required}} {{$readonly}} {{$disabled}} name="{{$form['name']}}" class='form-control'

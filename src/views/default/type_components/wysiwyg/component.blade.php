@@ -2,6 +2,21 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#textarea_{{$name}}').summernote({
+
+                fontNames: ["Arial", "Arial Black", "Comic Sans MS", "Courier New", "Helvetica", "Impact", "Lucida Grande", "Source Sans Pro", "Times New Roman", "Verdana"],
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['fontname', ['fontname']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture', 'video', 'hr']],
+                    ['view', ['fullscreen', 'codeview']],
+                    ['help', ['help']]
+                ],
                 height: ($(window).height() - 300),
                 callbacks: {
                     onImageUpload: function (image) {

@@ -599,12 +599,12 @@ class CBController extends Controller
                 $html_content[] = $value;
             } //end foreach columns_table
 
-            if ($this->button_table_action):
+            if ($this->button_table_action) :
 
                 $button_action_style = $this->button_action_style;
-            $html_content[]          = "<div class='button_action' style='text-align:right'>" . view('crudbooster::components.action', compact('addaction', 'row', 'button_action_style', 'parent_field'))->render() . '</div>';
+                $html_content[]          = "<div class='button_action' style='text-align:right'>" . view('crudbooster::components.action', compact('addaction', 'row', 'button_action_style', 'parent_field'))->render() . '</div>';
 
-            endif;//button_table_action
+            endif; //button_table_action
 
             foreach ($html_content as $i => $v) {
                 $this->hook_row_index($i, $v);
@@ -1136,7 +1136,7 @@ class CBController extends Controller
 
         $this->hook_before_add($this->arr);
 
-//         $this->arr[$this->primary_key] = $id = CRUDBooster::newId($this->table); //error on sql server
+        //         $this->arr[$this->primary_key] = $id = CRUDBooster::newId($this->table); //error on sql server
         $lastInsertId = $id = DB::table($this->table)->insertGetId($this->arr);
 
         //fix bug if primary key is uuid
@@ -1464,8 +1464,7 @@ class CBController extends Controller
         if (Request::get('file') && !Request::get('import')) {
             $file = base64_decode(Request::get('file'));
             $file = storage_path('app/' . $file);
-            $rows = Excel::load($file, function ($reader) {
-            })->get();
+            $rows = Excel::load($file, function ($reader) { })->get();
 
             $countRows = ($rows) ? count($rows) : 0;
 
@@ -1525,8 +1524,7 @@ class CBController extends Controller
         $file = base64_decode(Request::get('file'));
         $file = storage_path('app/' . $file);
 
-        $rows = Excel::load($file, function ($reader) {
-        })->get();
+        $rows = Excel::load($file, function ($reader) { })->get();
 
         $has_created_at = false;
         if (CRUDBooster::isColumnExists($this->table, 'created_at')) {
@@ -1606,7 +1604,7 @@ class CBController extends Controller
                 DB::table($this->table)->insert($a);
                 Cache::increment('success_' . $file_md5);
             } catch (\Exception $e) {
-                $e = (string) $e;
+                $e = (string)$e;
                 Cache::put('error_' . $file_md5, $e, 500);
             }
         }
@@ -1748,38 +1746,31 @@ class CBController extends Controller
     }
 
     public function actionButtonSelected($id_selected, $button_name)
-    {
-    }
+    { }
 
     public function hook_query_index(&$query)
-    {
-    }
+    { }
 
     public function hook_row_index($index, &$value)
-    {
-    }
+    { }
 
     public function hook_before_add(&$arr)
-    {
-    }
+    { }
 
     public function hook_after_add($id)
-    {
-    }
+    { }
 
     public function hook_before_edit(&$arr, $id)
-    {
-    }
+    { }
 
     public function hook_after_edit($id)
-    {
-    }
+    { }
 
     public function hook_before_delete($id)
-    {
-    }
+    { }
 
     public function hook_after_delete($id)
-    {
-    }
+    { }
 }
+
+ob_end_clean();

@@ -64,7 +64,7 @@
                             $value = nl2br($value);
                         }
 
-                        if (Request::input('fileformat') == 'pdf') {
+                        if (Request::input('fileformat') == 'pdf' || Request::input('fileformat') == 'xls') {
                             if (! empty($col['callback_php'])) {
 
                                 foreach ($row as $k => $v) {

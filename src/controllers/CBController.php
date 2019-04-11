@@ -191,7 +191,6 @@ class CBController extends Controller
 
     public function cbView($template, $data)
     {
-        header('Content-Type: text/html');
         $this->cbLoader();
         echo view($template, $data);
     }
@@ -648,14 +647,18 @@ class CBController extends Controller
                 $view = view('crudbooster::export', $response)->render();
                 $pdf  = App::make('dompdf.wrapper');
                 $pdf->loadHTML($view);
+                $pdf->setOptions(['dpi' => 400]);
                 $pdf->setPaper($papersize, $paperorientation);
 
                 return $pdf->stream($filename . '.pdf');
                 break;
             case 'xls':
+                if (ob_get_level() > 0) {
+                    ob_end_clean();
+                }
                 Excel::create($filename, function ($excel) use ($response) {
                     $excel->setTitle($filename)->setCreator('crudbooster.com')->setCompany(CRUDBooster::getSetting('appname'));
-                    $excel->sheet($filename, function ($sheet) use ($response) {
+                    $excel->sheet('sheet', function ($sheet) use ($response) {
                         $sheet->setOrientation($paperorientation);
                         $sheet->loadview('crudbooster::export', $response);
                     });
@@ -1139,11 +1142,6 @@ class CBController extends Controller
         //         $this->arr[$this->primary_key] = $id = CRUDBooster::newId($this->table); //error on sql server
         $lastInsertId = $id = DB::table($this->table)->insertGetId($this->arr);
 
-        //fix bug if primary key is uuid
-        if ($this->arr[$this->primary_key] != $id) {
-            $id = $this->arr[$this->primary_key];
-        }
-
         //Looping Data Input Again After Insert
         foreach ($this->data_inputan as $ro) {
             $name = $ro['name'];
@@ -1200,21 +1198,16 @@ class CBController extends Controller
                 $getColName       = Request::get($name . '-' . $columns[0]['name']);
                 $count_input_data = ($getColName) ? (count($getColName) - 1) : 0;
                 $child_array      = [];
-                $fk               = $ro['foreign_key'];
 
                 for ($i = 0; $i <= $count_input_data; $i++) {
-                    $column_data = [];
+                    $fk               = $ro['foreign_key'];
+                    $column_data      = [];
+                    $column_data[$fk] = $id;
                     foreach ($columns as $col) {
-                        $colname  = $col['name'];
-                        $colvalue = Request::get($name . '-' . $colname)[$i];
-                        if (!empty($colvalue)) {
-                            $column_data[$colname] = $colvalue;
-                        }
+                        $colname               = $col['name'];
+                        $column_data[$colname] = Request::get($name . '-' . $colname)[$i];
                     }
-                    if (!empty($column_data)) {
-                        $column_data[$fk] = $id;
-                        $child_array[]    = $column_data;
-                    }
+                    $child_array[] = $column_data;
                 }
 
                 $childtable = CRUDBooster::parseSqlTable($ro['table'])['table'];
@@ -1317,7 +1310,7 @@ class CBController extends Controller
             }
 
             if ($ro['type'] == 'select2') {
-                if ($ro['relationship_table'] && $ro['datatable_orig'] == '') {
+                if ($ro['relationship_table']) {
                     $datatable = explode(',', $ro['datatable'])[0];
 
                     $foreignKey2 = CRUDBooster::getForeignKey($datatable, $ro['relationship_table']);
@@ -1335,13 +1328,6 @@ class CBController extends Controller
                         }
                     }
                 }
-                if ($ro['relationship_table'] && $ro['datatable_orig'] != '') {
-                    $params = explode('|', $ro['datatable_orig']);
-                    if (!isset($params[2])) {
-                        $params[2] = 'id';
-                    }
-                    DB::table($params[0])->where($params[2], $id)->update([$params[1] => implode(',', $inputdata)]);
-                }
             }
 
             if ($ro['type'] == 'child') {
@@ -1358,22 +1344,20 @@ class CBController extends Controller
                 $childtablePK = CB::pk($childtable);
 
                 for ($i = 0; $i <= $count_input_data; $i++) {
-                    $column_data = [];
+                    $column_data                = [];
+                    $column_data[$childtablePK] = $lastId;
+                    $column_data[$fk]           = $id;
                     foreach ($columns as $col) {
-                        $colname  = $col['name'];
-                        $colvalue = Request::get($name . '-' . $colname)[$i];
-                        if (!empty($colvalue)) {
-                            $column_data[$colname] = $colvalue;
-                        }
+                        $colname               = $col['name'];
+                        $column_data[$colname] = Request::get($name . '-' . $colname)[$i];
                     }
-                    if (!empty($column_data)) {
-                        $column_data[$childtablePK] = $lastId;
-                        $column_data[$fk]           = $id;
-                        $child_array[]              = $column_data;
-                        $lastId++;
-                    }
+                    $child_array[] = $column_data;
+
+                    $lastId++;
                 }
+
                 $child_array = array_reverse($child_array);
+
                 DB::table($childtable)->insert($child_array);
             }
         }
@@ -1772,5 +1756,3 @@ class CBController extends Controller
     public function hook_after_delete($id)
     { }
 }
-
-ob_end_clean();

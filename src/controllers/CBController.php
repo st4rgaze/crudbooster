@@ -657,8 +657,8 @@ class CBController extends Controller
                     ob_end_clean();
                 }
                 Excel::create($filename, function ($excel) use ($response) {
-                    $excel->setTitle($filename)->setCreator('crudbooster.com')->setCompany(CRUDBooster::getSetting('appname'));
-                    $excel->sheet('sheet', function ($sheet) use ($response) {
+                    $excel->setTitle($filename)->setCreator(env('APP_NAME'))->setCompany(env('APP_NAME'));
+                    $excel->sheet(env('APP_NAME'), function ($sheet) use ($response) {
                         $sheet->setOrientation($paperorientation);
                         $sheet->loadview('crudbooster::export', $response);
                     });

@@ -601,7 +601,7 @@ class CBController extends Controller
             if ($this->button_table_action) :
 
                 $button_action_style = $this->button_action_style;
-                $html_content[]          = "<div class='button_action' style='text-align:right'>" . view('crudbooster::components.action', compact('addaction', 'row', 'button_action_style', 'parent_field'))->render() . '</div>';
+            $html_content[]          = "<div class='button_action' style='text-align:right'>" . view('crudbooster::components.action', compact('addaction', 'row', 'button_action_style', 'parent_field'))->render() . '</div>';
 
             endif; //button_table_action
 
@@ -1588,7 +1588,7 @@ class CBController extends Controller
                 DB::table($this->table)->insert($a);
                 Cache::increment('success_' . $file_md5);
             } catch (\Exception $e) {
-                $e = (string)$e;
+                $e = (string) $e;
                 Cache::put('error_' . $file_md5, $e, 500);
             }
         }
@@ -1730,29 +1730,38 @@ class CBController extends Controller
     }
 
     public function actionButtonSelected($id_selected, $button_name)
-    { }
+    {
+    }
 
     public function hook_query_index(&$query)
-    { }
+    {
+    }
 
     public function hook_row_index($index, &$value)
-    { }
+    {
+    }
 
     public function hook_before_add(&$arr)
-    { }
+    {
+    }
 
     public function hook_after_add($id)
-    { }
+    {
+    }
 
     public function hook_before_edit(&$arr, $id)
-    { }
+    {
+    }
 
     public function hook_after_edit($id)
-    { }
+    {
+    }
 
     public function hook_before_delete($id)
-    { }
+    {
+    }
 
     public function hook_after_delete($id)
-    { }
+    {
+    }
 }
